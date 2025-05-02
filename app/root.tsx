@@ -2,25 +2,14 @@ import {
   isRouteErrorResponse,
   Links,
   Meta,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from 'react-router';
+import { Fragment } from 'react/jsx-runtime';
 import type { Route } from './+types/root';
 import './app.css';
-
-export const links: Route.LinksFunction = () => [
-  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-  {
-    rel: 'preconnect',
-    href: 'https://fonts.gstatic.com',
-    crossOrigin: 'anonymous',
-  },
-  {
-    rel: 'stylesheet',
-    href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
-  },
-];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -41,11 +30,40 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <Fragment>
+      <nav className="flex gap-2 border-b px-4 py-2">
+        <NavLink
+          className={({ isActive }) => (isActive ? 'underline' : '')}
+          to="/"
+          end
+        >
+          Home
+        </NavLink>
+        <NavLink
+          className={({ isActive }) => (isActive ? 'underline' : '')}
+          to="/account"
+          end
+        >
+          Account
+        </NavLink>
+        <NavLink
+          className={({ isActive }) => (isActive ? 'underline' : '')}
+          to="/account/project"
+          end
+        >
+          Project
+        </NavLink>
+      </nav>
+      <div className="m-2 mx-4">
+        <Outlet />
+      </div>
+    </Fragment>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = 'Oops!';
+  let message = 'Error Boundary: root.tsx';
   let details = 'An unexpected error occurred.';
   let stack: string | undefined;
 
@@ -61,14 +79,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="container mx-auto p-4 pt-16">
+    <main className="m-2">
       <h1>{message}</h1>
       <p>{details}</p>
-      {stack && (
-        <pre className="w-full overflow-x-auto p-4">
-          <code>{stack}</code>
-        </pre>
-      )}
+      {stack && <pre className="w-full overflow-x-auto">{stack}</pre>}
     </main>
   );
 }

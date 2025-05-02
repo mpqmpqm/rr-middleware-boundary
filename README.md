@@ -1,92 +1,36 @@
-# Welcome to React Router!
+# Middleware: errors caught at root error boundary, not route error boundary
 
-A modern, production-ready template for building full-stack React applications
-using React Router.
+[Minimal repro](https://github.com/mpqmpqm/rr-middleware-boundary)
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+Under certain conditions route-level middleware errors are caught at `root.tsx` rather than at route-defined error boundaries.
 
-## Features
+Additionally, different errors are reported for document loads vs. client navigation.
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+**Please note**: Comment the `loader` in the `auth` layout on and off to see the expected behavior when no loader is defined for that layout and the unexpected behavior when a loader is defined.
 
-## Getting Started
+## Issue template
 
-### Installation
+### What version of React Router are you using?
 
-Install the dependencies:
+7.5.3
 
-```bash
-npm install
-```
+### Steps to Reproduce
 
-### Development
+[Minimal repro](https://github.com/mpqmpqm/rr-middleware-boundary)
 
-Start the development server with HMR:
+1. Starting at index, click `Account` link. `provideAccount` middleware throws and is caught by `root.tsx` error boundary.
 
-```bash
-npm run dev
-```
+   1. Reload the page to see different errors reported between client navigation and document load.
 
-Your application will be available at `http://localhost:5173`.
+      Client navigation: `Cannot use 'in' operator to search for 'error' in undefined`.  
+      vs. Document load: `Expect Error Boundary: account.tsx`
 
-## Building for Production
+2. Comment out the `loader` in the `auth` layout and observe that errors are caught at the expected route error boundaries.
 
-Create a production build:
+### Expected Behavior
 
-```bash
-npm run build
-```
+Errors thrown in route-specific middleware should be caught by the route's error boundary. Errors should be consistent between document loads and client navigation.
 
-## Deployment
+### Actual Behavior
 
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports
-Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is
-production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already
-configured for a simple default starting experience. You can use whatever CSS
-framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+Errors thrown in route-specific middleware are caught by the root error boundary. Different errors are reported for document loads vs. client navigation.
